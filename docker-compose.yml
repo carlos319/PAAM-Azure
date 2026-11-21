@@ -1,0 +1,26 @@
+services:
+  db:
+    image: mariadb:10.11
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: moodle
+      MARIADB_USER: moodleuser
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  moodle:
+    build: .
+    restart: unless-stopped
+    depends_on: [db]
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - moodledata:/var/moodledata
+      - ./config.php:/var/www/html/config.php
+
+volumes:
+  dbdata:
+  moodledata:
